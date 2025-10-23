@@ -4,14 +4,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"github.com/joho/godotenv"
 	"jwt-server/handlers"
 )
 
-//var jwtKey = []byte("very_secret_key")
-
-const jwtSecret = "super-secret-key"
-
 func main() {
+
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET enviroment variable is not set")
+	}
+
 	handlerInstance := handlers.NewHandler([]byte(jwtSecret))
 
 	http.HandleFunc("/login", handlerInstance.LoginHandler)
